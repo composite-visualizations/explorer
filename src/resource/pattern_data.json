@@ -1,0 +1,93 @@
+{
+    "juxtaposed":{
+        "name":"Juxtaposed",
+        "definition":"In a juxtaposed visualization, the components have no overlapping and are positioned side-by-side. Please note that, although a user interface (UI) may also consist of visualizations without overlapping, it is not considered a juxtaposed visualization in the context of this study. The component interrelationships in a UI are considerably looser than those in a juxtaposed visualization. As a rule of thumb, we consider a UI an arbitrary placement of visualizations or interface components (e.g., buttons, sliders, and progress bars) and only extract the visualizations for this study.",
+        "subtypes":[
+            {
+                "id":"repeated",
+                "name":"Repeated",
+                "definition":"Repeated visualizations refer to the juxtaposed visualizations composed of a series of components of the same structure (visualization type or composite visualization).",
+                "advantages":["The visual similarity of repeated components provides a strong visual hint of grouping.","Repeated visualizations are easy for users to compare and find anomalies.","Repeated visualizations are easy to implement because codes can be reused conveniently."],
+                "disadvantages":["It is difficult to compare when the number of components gets large.","Because of the same appearance of components, users may directly compare visual properties, such as size and position, without a careful reference to the scales and attributes of individual components, leading to incorrect insights."],
+                "suggestions":["The best practice of component number is to keep it between two and eight in a repeated visualization, as they are the most popular in existing examples. However, when we use it as the main view for analysis, the number should be even fewer ([2,4))","It is better to omit unnecessary visual elements to reduce visual clutter. For example, using a shared axis and removing duplicated marks for saving space and assisting comparison."]
+            },
+            {
+                "id":"mirrored",
+                "name":"Mirrored",
+                "definition":"Mirrored visualizations refer to symmetrically placing two components of the same structure. Two components have the same scale on both sides of an axis of symmetry.",
+                "advantages":["Taking advantage of people's experience with mirror reflections, mirrored visualizations imply identical objects and invite people to compare the mirrored two components","Mirrored visualizations are aesthetically pleasing because of symmetry. From the samples, we discover that in some cases, mirrored visualizations are adopted as a part of a symmetrical design."],
+                "disadvantages":["Mirrored visualizations only support comparing two data series.","Because of the symmetry layout, it is more difficult to discover precise differences between components."],
+                "suggestions":["we do not recommend using mirrored visualizations when the main design goal is precise comparison, but we can use them as auxiliary components within a symmetrical design. When using mirrored visualizations, we can use an explicit encoding to represent the difference or hide the redundant elements."]
+            },
+            {
+                "id":"stacked",
+                "name":"Stacked",
+                "definition":"In a stacked visualization, different components are aligned or concatenated by the same data items or a shared margin (e.g., axis). Please note that, although a repeated visualization may also have a shared axis, stacked visualizations are different in terms of representation and usage.First, the components in a stacked visualization are often different, while components in a repeated visualization are strictly homogeneous. Second, a repeated visualization is mainly used for visual comparison in a space-efficient manner, while a stacked visualization more focuses on presenting different facets of the same data in an interconnected manner.",
+                "advantages":["A stacked visualization can present different aspects of the same data at the same time in a compact manner.","Relationships between two stacked components are maintained by a shared axis or shared visual items. Users can conveniently switch back and forth between components to explore the data because of such visual continuity."],
+                "disadvantages":["The visual continuity is reduced when the number of items or the distance between aligned items increases."],
+                "suggestions":["If charts are related in the back-end data, intermediate components can be used to connect them for better visual coherence, thereafter creating a new stacked visualization.","If possible, stack multiple visualizations along the same direction or use a grid layout to improve the space usage.","If the number of aligned items is large or the alignments obscure, use visual hints to indicate the relationships, such as color encoding, highlighting-on-hover, or visual links."]
+            }
+        ],
+        "advantages":["Compared to overlaid and nested patterns where visual components are overlaid on or contained by other components, juxtaposed visualizations offer a flexible and clear layout for visual components without visual occlusions."],
+        "disadvantages":[],
+        "suggestions":[]
+    },
+    "overlaid":{
+        "name":"Overlaid",
+        "definition":"In an overlaid visualization, visual components are overlaid over other components.",
+        "subtypes":[
+            {
+                "id":"accompanied",
+                "name":"Accompanied",
+                "definition":"In an accompanied visualization, component visualizations share the same coordinate system.",
+                "advantages":["An accompanied visualization places multiple components in the same coordinate system to facilitate direct comparison and pattern recognition."],
+                "disadvantages":[],
+                "suggestions":["Use transparency to reduce occlusion or put summary/important visualizations on the top. For example, placing box-plots on top of a scatterplot for anomaly detection tasks.","Avoid adopting multiple coordinate systems in an accompanied visualization because of the potential biases."]
+            },
+            {
+                "id":"coordinated",
+                "name":"Coordinated",
+                "definition":"Compared to other overlaid visualizations, one distinctive characteristic of coordinated visualizations is that parent components provide coordinates for child components (or their visual elements).",
+                "advantages":["Compared with components of an accompanied visualization that have independent but identical coordinate systems, the layout of child components is determined by their parent components in coordinated visualizations. Therefore, they are effective in helping users interpret child components in the context of a parent component."],
+                "disadvantages":[],
+                "suggestions":["Combine a parent component that provides spatial context and child components whose visual elements do not encode spatial information, such as word cloud and proportional area charts.","Avoid occlusions between child components. Since occlusions between child and parent components are inevitable, the occlusions between child components may exacerbate the overall effectiveness of visualization."]
+            },
+            {
+                "id":"annotated",
+                "name":"Annotated",
+                "definition":"In annotated visualizations, child components of small size are overlaid on parent components and linked to specific elements of parent components. Compared with accompanied and coordinated visualizations that components have coordinated relationships, annotated visualizations are more flexible, since child components have more freedom in placement and can use visual links to explicitly connect to the parent component.",
+                "advantages":["The advantage of annotated visualizations is the flexibility in positioning child components."],
+                "disadvantages":[],
+                "suggestions":["Follow the rule of details-on-demand and only visualize the details of focused data items.","Optimize the positions of child components to utilize the empty space and reduce line crossings."]
+            },
+            {
+                "id":"large_panel",
+                "name":"Large Panel",
+                "definition":"In a large-panel visualization, child components of small size overlay directly on parent components, but parent components do not provide coordinates for child components. Unlike annotated visualizations, large-panel visualizations do not connect child and parent components using links.",
+                "advantages":["Compared with annotated visualizations, large-panel visualizations offer even more flexibility for placing child components, since they do not require any anchoring points in the parent component."],
+                "disadvantages":[],
+                "suggestions":["It is recommended to place child components at the positions where elements are less important (such as corners) to mitigate visual occlusion."]
+            }
+        ],
+        "advantages":["Compared with juxtaposed visualizations, an overlaid visualization often has a more compact layout.","Overlaid visualizations can directly represent the correspondences between different components, thus enhancing the visual effect."],
+        "disadvantages":["A common disadvantage of overlaid visualizations is occlusions, compared with juxtaposed visualizations and nested visualizations."],
+        "suggestions":["When designing an overlaid visualization, it would be better to use clutter reduction techniques (e.g., edge bundling) to improve the visual appearance."]
+    },
+    "nested":{
+        "name":"Nested",
+        "definition":"",
+        "subtypes":[
+            {
+                "id":"nested",
+                "name":"Nested",
+                "definition":"In nested visualizations, some components (denoted by child components) are embedded into the visual elements or internal area of other components (denoted by parent components).",
+                "advantages":["Nested visualizations have no occlusions between parent and child components and imply a hierarchical information, compared to overlaid visualizations. Nested visualizations are well-suited to visualize the overview while maintaining simple details of the child items (e.g., graph nodes and matrix cells).","Nested visualizations are more compact than overlaid visualizations and juxtaposed visualizations."],
+                "disadvantages":[],
+                "suggestions":["Only show summary information in child components. Too much detailed information will overwhelm users.","Apply geometric transformation techniques on the elements of parent components to make room for child components."]
+            }
+        ],
+        "advantages":[""],
+        "disadvantages":[],
+        "suggestions":[]
+    }
+}

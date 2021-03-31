@@ -1,7 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Grid, Tabs, Tab } from '@material-ui/core';
-import logo from '../resource/logo-visimages.png';
 import patternData from '../resource/pattern_data.json'
 
 const colors = {

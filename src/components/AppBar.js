@@ -10,7 +10,6 @@ import {
     useRouteMatch,
     useParams
   } from "react-router-dom";
-import logo from '../resource/logo-visimages.png';
 
 const useStyles = makeStyles((theme) => ({
     root: {

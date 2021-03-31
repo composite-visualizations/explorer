@@ -7,7 +7,7 @@ import { Stage, Layer, Rect, Transformer } from 'react-konva';
 import RelationTree from './RelationTree.js';
 import { transformSync } from '@babel/core';
 
-const url = uri => `http://localhost:5000${uri}`;  //local version
+const url = uri => `https://3.16.54.204:4000${uri}`;  //local version
 
 const useStyles = makeStyles((theme) => ({
     root: {

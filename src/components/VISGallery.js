@@ -6,7 +6,7 @@ import SelectedImage from "./SelectedImage";
 // import { Replay } from '@material-ui/icons'
 import VISImage from './VISImage'
 import Gallery from 'react-photo-gallery';
-const url = uri => `http://localhost:5000${uri}`;  //local version
+const url = uri => `https://3.16.54.204:4000${uri}`;  //local version
 
 const useStyles = makeStyles((theme) => ({
   root: {

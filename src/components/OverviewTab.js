@@ -100,7 +100,7 @@ function OverviewTab({ d }) {
     };
 
     const handleDetailChange = (event, newValue) => {
-        console.log(event.target.id)
+        // //console.log(event.target.id)
         event.target.textContent?d.dataState.overviewDetailState = mapValue[event.target.textContent]:d.dataState.overviewDetailState = mapValue[event.target.id];
         d.updateHeatmapData()
         setDetailValue(newValue);
@@ -130,7 +130,7 @@ function OverviewTab({ d }) {
     const checkDetailDisabled = (value) => {
         if(d.filterState.filterType.compType === 'and' && d.filterStateSelected('compType') === 0)return false
         value = mapValue[value]
-        console.log(value, d.filterState.compType[value])
+        //console.log(value, d.filterState.compType[value])
         return !d.filterState.compType[value]
     }
 

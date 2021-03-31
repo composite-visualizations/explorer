@@ -99,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
 
 function PatternBlock({ icon, name, definition, advantages, disadvantages, suggestions, figure }) {
     const classes = useStyles();
-    console.log(advantages, typeof (advantages));
+    // //console.log(advantages, typeof (advantages));
     return (
         <div className={classes.blockWrap}>
             <img src={icon} className={classes.icon}></img>
@@ -124,8 +124,8 @@ function PatternBlock({ icon, name, definition, advantages, disadvantages, sugge
 
 function DesignPattern() {
     const classes = useStyles();
-    console.log(patternData['juxtaposed'].advantages);
-    console.log(patternData['juxtaposed'].advantages.length);
+    // //console.log(patternData['juxtaposed'].advantages);
+    // //console.log(patternData['juxtaposed'].advantages.length);
     const [key, setValue] = React.useState('juxtaposed');
 
     const handleChange = (event, newValue) => {
@@ -181,7 +181,7 @@ function DesignPattern() {
                     {
                         patternData[key].subtypes.map(subtype => {
                             const { id, name, definition, advantages, disadvantages, suggestions } = subtype;
-                            // console.log(id, definition, advantages, typeof(advantages));
+                            // //console.log(id, definition, advantages, typeof(advantages));
                             return (<PatternBlock
                                 icon={process.env.PUBLIC_URL + `/patterns/${id}-icon.png`}
                                 name={name}

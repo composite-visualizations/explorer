@@ -57,11 +57,11 @@ const SelectedImage = ({
     selectedImgStyle.transform = `translateZ(0px) scale3d(${sx}, ${sy}, 1)`;
 
     const handleClick = () => {
-        // console.log(photo)
+        // //console.log(photo)
         // setIsSelected(!selected)
         const imgId = photo.src.split('/').pop();
         d.activeSelectedImgState(imgId);
-        console.log(d.imgState)
+        //console.log(d.imgState)
         document.getElementById('gallery_wrap').style.width = '49%';
     }
 

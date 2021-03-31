@@ -89,22 +89,22 @@ function VISGallery({ d }) {
   // }
 
   // useEffect(() => {
-  //   console.log(imgList[0])
+  //   //console.log(imgList[0])
   //   imgList = imgList.map(img => {
   //     img.src = img.src
   //     img.width = img.width * d.imgState.galleryScale;
   //     img.height = img.height * d.imgState.galleryScale;
   //     return img;
   //   });
-  //   console.log(imgList[0])
+  //   //console.log(imgList[0])
   // }, [d.imgState.galleryScale]);
 
   let imgList = d.imgList.length === 0 ? [] : d.imgList.map((img,idx) => {
     const key = img.split('.')[0];
-    // console.log(key)
+    // //console.log(key)
     const Width = d.imagesSizeData[key]['img_size']['width'] / scaleWidth * d.imgState.galleryScale;
     const Height = d.imagesSizeData[key]['img_size']['height'] / scaleHeight * d.imgState.galleryScale;
-    // if(idx === 0)console.log(Width,Height)
+    // if(idx === 0)//console.log(Width,Height)
     return { src: url(`/img_src/${img}`), width: Width, height: Height, loading: 'lazy' };
   })
   

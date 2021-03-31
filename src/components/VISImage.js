@@ -128,7 +128,7 @@ const Rectangle = ({ shapeProps, isSelected, isHighlighted, onSelect, onChange }
             trRef.current.getLayer().batchDraw();
         }
     }, [isSelected]);
-    // console.log(shapeProps)
+    // //console.log(shapeProps)
     return (
         <React.Fragment>
             <Rect
@@ -162,7 +162,7 @@ function VISImage({ d, top }) {
 
 
     const handleSelect = ({ target: Rect }) => {
-        console.log(Rect.index)
+        //console.log(Rect.index)
         // d.transformVisualizationsFromRaw(Rect.index);
     }
 
@@ -186,9 +186,9 @@ function VISImage({ d, top }) {
         d.imgState.imgSize.width = img.naturalWidth;
         d.imgState.viewDimension.height = scale * img.naturalHeight;
         d.imgState.viewDimension.width = scale * img.naturalWidth;
-        // console.log(document.getElementById('imgView').clientWidth)
-        // console.log(document.getElementById('imgWrapping').clientWidth)
-        // console.log(document.getElementById('img').clientWidth)
+        // //console.log(document.getElementById('imgView').clientWidth)
+        // //console.log(document.getElementById('imgWrapping').clientWidth)
+        // //console.log(document.getElementById('img').clientWidth)
         d.getImgDetails(d.imgState.imgId.split('.')[0])
     };
 
@@ -239,7 +239,7 @@ function VISImage({ d, top }) {
                     </Stage>
                 </div>
             </div>
-            {/* {console.log(d.imgState.imgId)} */}
+            {/* {//console.log(d.imgState.imgId)} */}
             <div className={classes.infoBlock}>
                 {/* <RelationTable className={classes.relTable} relationsTree={d.imgState.relations}></RelationTable> */}
                 <RelationTree className={classes.relTable} d={d} relationsTree={d.imgState.relations}></RelationTree>

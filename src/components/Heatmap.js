@@ -421,7 +421,7 @@ function Heatmap({ d }) {
     myChart.setOption(option);
     myChart.off('click');//if not off, echarts will rerender for many times
     myChart.on('click', (params) => {
-      console.log(params)
+      // //console.log(params)
       if (params.seriesType === 'bar') {
         d.detailsBar.visType = ReverseLabelToName[params.name];
         d.detailsBar.show = true;
@@ -441,7 +441,7 @@ function Heatmap({ d }) {
         if (value[2] == 0) return;
         const client = d.indexToClient[value[0]];
         const host = d.indexToHost[value[1]];
-        console.log(client, host)
+        // //console.log(client, host)
         d.updateImgList(client, host)
         // d.highlightIndexList = params.dataIndex
       }
@@ -475,7 +475,7 @@ function Heatmap({ d }) {
     detailsBar.setOption(barOption);
     detailsBar.off('click');//if not off, echarts will rerender for many times
     detailsBar.on('click', (params) => {
-      console.log(params)
+      // //console.log(params)
       if (d.detailsBar.type === 'Child') {
         d.updateImgList(d.detailsBar.visType, ReverseLabelToName[params.name])
       } else if (d.detailsBar.type === 'Parent') {

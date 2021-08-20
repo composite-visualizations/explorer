@@ -5,7 +5,7 @@ import authorsData from '../resource/authors.json';
 import imagesSizeData from '../resource/img_size.json'
 import { ColorStyles, TextTranslate } from "./Categories";
 
-const url = uri => `https://compvis.zjuidg.org/${uri}`;  //local version
+const url = uri => `https://compvis.zjuidg.org${uri}`;  //local version
 
 class Data {
     constructor(root) {

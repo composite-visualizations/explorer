@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => ({
   },
   grid: {
     width: '100%',
+    height:'50%',
   },
   text: {
     textAlign: 'right',

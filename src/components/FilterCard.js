@@ -10,11 +10,11 @@ import LazyLoad from 'react-lazy-load';
 const useStyles = makeStyles((theme) => ({
     root: {
         width: '50%',
-        height: '20%',
+        height: '100%',
     },
     cardContentLeft: {
         display: 'flex',
-        height: '55px',
+        height: '70%',
         margin: '8px 8px 5px 20px',
         justifyContent:'space-between',
         alignItems:'center',
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     },
     cardContentRight: {
         display: 'flex',
-        height: '55px',
+        height: '70%',
         margin: '8px 20px 5px 5px',
         justifyContent:'space-between',
         alignItems:'center',
@@ -30,7 +30,9 @@ const useStyles = makeStyles((theme) => ({
     },
     text: {
         // display: 'inline',
-        // overflow: 'hidden'
+        minWidth: '120px',
+        maxWidth: '160px',
+        overflow: 'hidden'
     },
     icon: {
         margin: '0px 10px 0px 10px',
@@ -123,11 +125,10 @@ function FilterCard({ value, d }) {
     return (
         <div className={classes.root}>
             <Card className={type === 'compType' || type === 'conference' ? classes.cardContentLeft:classes.cardContentRight} variant="outlined">
-                <div style={{display:"flex",alignItems:"center"}}>
+                <div style={{display:"flex",alignItems:"center",width:'100%',justifyContent:'space-between'}}>
 
                 <IconButton className={classes.icon} onClick={handleClick}>{selectIcon()}</IconButton>
-                <Typography className={classes.text} id={value} onClick={handleClick}>{`${value} ${d.filterState.filterBarState[type]}`}</Typography>
-                </div>
+                <Typography noWrap className={classes.text} id={value} onClick={handleClick}>{`${value} ${d.filterState.filterBarState[type]}`}</Typography>
                 <IconButton className={classes.icon} onClick={handleClick}><ExpandMore /></IconButton>
                 <Popover
                     id={id}
@@ -194,6 +195,7 @@ function FilterCard({ value, d }) {
                         {['coOccurrence'].map(key => {return <MenuItem className={classes.option} selected={d.filterState[type][key]} onClick={() => d.changeFilterState(type, key)} key={key}><ListItemText primary={LabelToName[key]}/><Checkbox checked={d.filterState[type][key]}/></MenuItem>})} */}
                     </div> : null}
                 </Popover>
+                </div>
             </Card>
         </div>
     )

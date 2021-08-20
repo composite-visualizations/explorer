@@ -6,7 +6,7 @@ import SelectedImage from "./SelectedImage";
 // import { Replay } from '@material-ui/icons'
 import VISImage from './VISImage'
 import Gallery from 'react-photo-gallery';
-const url = uri => `https://compviz.zjuidg.org/${uri}`;  //local version
+const url = uri => `https://compvis.zjuidg.org${uri}`;  //local version
 
 const useStyles = makeStyles((theme) => ({
   root: {

@@ -18,7 +18,6 @@ function filterImages(state){
     const visType = Object.keys(state.visType).filter(key => state.visType[key] === true);
     const filterType = state.filterType
 
-    console.log(compType, authors, conference, visType, filterType)
 
     Object.entries(compositeVisInfo).forEach(([itemKey, itemValue], idx) => {
         let fulfilled = true
@@ -33,8 +32,6 @@ function filterImages(state){
             fulfilled = checkInclude(itemValue.conference, conference, filterType.conference)
         }
         if (fulfilled && visType.length > 0){
-            // console.log("vis type" ,visType.length)
-            // console.log(itemValue.visType, visType, filterType.visType)
             fulfilled = checkInclude(itemValue.visType, visType, filterType.visType)
         }
 
@@ -49,7 +46,6 @@ function checkName(){}
 function checkInclude(values, conditions, logic){
     if (logic == 'and'){
         for (const c of conditions){
-            console.log(c, values.indexOf(c))
             if (values.indexOf(c) == -1) return false
         }
         return true
@@ -251,11 +247,9 @@ class Data {
 
     @action resetHeatmapData = () => {
         this.heatmapData = {};
-        // //console.log(this.filteredVisType)
         Object.keys(this.filteredVisType).forEach(client => {
             this.heatmapData[client] = {}
             Object.keys(this.filteredVisType).forEach(host => {
-                // //console.log(client,host)
                 this.heatmapData[client][host] = [];
             })
         })
@@ -276,7 +270,6 @@ class Data {
         host = host || null;
         if (this.dataState.selectGalleryImg) this.closeSelectedImgState();
         let imgList = this.heatmapData;
-        // //console.log(client,host)
         if (client !== null && host !== null) {
             imgList = imgList[client][host]
         } else if (client !== null && host === null) {
@@ -369,7 +362,6 @@ class Data {
         const coOccurrence = ['coOccurrence']
         if (document.getElementById('heatmap_wrap'))
             document.getElementById('heatmap_wrap').style.height = '90%';
-        // //console.log(this.filteredImagesData)
         if (this.dataState.overviewState === 'coOccurrence') {
             this.imgList.forEach(imgId => {
                 compositeVisInfo[imgId].coOccurrence.forEach(arr => {
@@ -381,7 +373,6 @@ class Data {
         } else {
             this.imgList.forEach(imgId => {
                 compositeVisInfo[imgId].comp.forEach(arr => {
-                    // //console.log(arr)
                     const intersectionLen = (arr1, arr2) => {
                         return arr1.filter(compType => arr2.indexOf(compType) > -1).length
                     }
@@ -456,27 +447,19 @@ class Data {
                     const client = comp[0];
                     const host = comp[1];
                     [client, host].forEach(visType => {
-                        // //console.log(client, host)
                         if (!(visType in this.filteredVisType)) this.filteredVisType[visType] = 0
-                        // if (this.filterState.visType[visType]) {
-                        // //console.log(img, visType)
                         this.filteredVisType[visType] += 1;
-                        // }
                     })
                 })
             })
         }
         else{
             this.imgList.forEach(imgId => {
-                // //console.log(img)
                 compositeVisInfo[imgId].comp.forEach(comp => {
                     const client = comp[0];
                     const host = comp[1];
                     [client, host].forEach(visType => {
-                        // //console.log(client, host)
                         if (!(visType in this.filteredVisType)) this.filteredVisType[visType] = 0
-                        // if (this.filterState.visType[visType]) {
-                        // //console.log(img, visType)
                         this.filteredVisType[visType] += 1;
                         // }
                     })
@@ -577,9 +560,7 @@ class Data {
         const dimensions = this.imgState.viewDimension;
         const imgSize = this.imgState.imgSize;
         let tempList = []
-        //console.log(relationType)
         const traverseRelation = (relation, visList) => {
-            //console.log(relation, typeof (relation))
             if (typeof (relation) === 'string') {
                 visList.push(relation)
             } else if (balanced === 'balanced') {
@@ -597,10 +578,8 @@ class Data {
             return visList
         }
         const visList = traverseRelation(rel, tempList);
-        //console.log(visList)
         let x, y, x2, y2, flag = false;
         this.imgState.visualizationsRaw.forEach((raw, i) => {
-            // //console.log(raw.id,visList.indexOf(raw.id) > -1)
             if (visList.indexOf(raw.id) > -1) {
                 if (flag === false) {
                     x = raw.x;
@@ -631,13 +610,9 @@ class Data {
     }
 
     @action transformRelationsFromRaw = () => {
-        // this.imgState.relations = [];
-        // this.imgState.relations['name'] = 'root'
-        // //console.log(this.imgState.relationsRaw)
         this.imgState.relations = this.imgState.relationsRaw.map(relation => {
             return relation
         })
-        // //console.log(this.imgState.relations)
     }
 
     //render when select a image in gallery
@@ -691,7 +666,6 @@ class Data {
             overlaid: '#ef8536',
             nested: '#519c3e'
         }
-        console.log(value)
         this.dataState.overviewState = value;
         this.dataState.matrixColor = mapColor[value];
         this.updateFilteredVisType();

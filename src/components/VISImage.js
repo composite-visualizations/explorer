@@ -5,9 +5,14 @@ import { Typography, IconButton, TextField } from '@material-ui/core';
 import { ChevronLeft, ChevronRight, Close } from '@material-ui/icons';
 import { Stage, Layer, Rect, Transformer } from 'react-konva';
 import RelationTree from './RelationTree.js';
-import { transformSync } from '@babel/core';
 
-const url = uri => `https://compvis.zjuidg.org${uri}`;  //local version
+// const url = uri => `https://compvis.zjuidg.org${uri}`;  //local version
+
+const url = (imageName) => {
+    console.log(imageName)
+    const deImageName = imageName.split("_")
+    return `https://github.com/composite-visualizations/data/blob/main/${deImageName[0]}/${deImageName[1]}.png?raw=true`
+}
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -186,9 +191,7 @@ function VISImage({ d, top }) {
         d.imgState.imgSize.width = img.naturalWidth;
         d.imgState.viewDimension.height = scale * img.naturalHeight;
         d.imgState.viewDimension.width = scale * img.naturalWidth;
-        // //console.log(document.getElementById('imgView').clientWidth)
-        // //console.log(document.getElementById('imgWrapping').clientWidth)
-        // //console.log(document.getElementById('img').clientWidth)
+        console.log(d.imgState)
         d.getImgDetails(d.imgState.imgId.split('.')[0])
     };
 
@@ -201,7 +204,7 @@ function VISImage({ d, top }) {
                     <img
                         onLoad={onImgLoad}
                         className={classes.img}
-                        src={url(`/img_src/${d.imgState.imgId}`)}
+                        src={url(d.imgState.imgId)}
                         alt={''}
                         style={{
                             width: d.imgState.viewDimension.width,
@@ -255,14 +258,6 @@ function VISImage({ d, top }) {
                         },
                     }}
                 ></TextField >
-                {/* <div className={classes.textWrap}>
-                    <Typography className={classes.textType}>{`Visualization Type:`}</Typography>
-                    <Typography className={classes.text}>{`${d.imgState['visType']}`}</Typography>
-                </div>
-                <div className={classes.textWrap}>
-                    <Typography className={classes.textType}>{`Composition Type:`}</Typography>
-                    <Typography className={classes.text}>{`${d.imgState['compType']}`}</Typography>
-                </div> */}
                 <div className={classes.textWrap}>
                     <Typography className={classes.textType}>{`Title:`}</Typography>
                     <Typography className={classes.text}>{`${d.imgState['title']}`}</Typography>

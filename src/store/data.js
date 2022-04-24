@@ -1,11 +1,66 @@
-// import { EmojiObjects } from "@material-ui/icons";
-import { color } from "echarts";
 import { makeObservable, action, computed, observable } from "mobx";
 import authorsData from '../resource/authors.json';
-import imagesSizeData from '../resource/img_size.json'
-import { ColorStyles, TextTranslate } from "./Categories";
+import compositeVisInfo from '../resource/composite_vis_info_full.json'
+import { ColorStyles} from "./Categories";
 
-const url = uri => `https://compvis.zjuidg.org${uri}`;  //local version
+
+
+
+
+function filterImages(state){
+    // keys: compType, authors, conference, filterBarState??, filterType, searchState, searchWords, visType, years
+
+    let imgList = []
+
+    const compType = Object.keys(state.compType).filter(key => state.compType[key] === true);
+    const authors = Object.keys(state.authors).filter(key => state.authors[key] === true);
+    const conference = Object.keys(state.conference).filter(key => state.conference[key] === true);
+    const visType = Object.keys(state.visType).filter(key => state.visType[key] === true);
+    const filterType = state.filterType
+
+    console.log(compType, authors, conference, visType, filterType)
+
+    Object.entries(compositeVisInfo).forEach(([itemKey, itemValue], idx) => {
+        let fulfilled = true
+
+        if (fulfilled && compType.length > 0){
+            fulfilled = checkInclude(itemValue.compType, compType, filterType.compType)
+        }
+        if (fulfilled && authors.length > 0){
+            fulfilled = checkInclude(itemValue.authors, authors, filterType.authors)
+        }
+        if (fulfilled && conference.length > 0){
+            fulfilled = checkInclude(itemValue.conference, conference, filterType.conference)
+        }
+        if (fulfilled && visType.length > 0){
+            // console.log("vis type" ,visType.length)
+            // console.log(itemValue.visType, visType, filterType.visType)
+            fulfilled = checkInclude(itemValue.visType, visType, filterType.visType)
+        }
+
+        if (fulfilled) imgList.push(itemKey)
+    })
+
+    return imgList
+}
+
+function checkName(){}
+
+function checkInclude(values, conditions, logic){
+    if (logic == 'and'){
+        for (const c of conditions){
+            console.log(c, values.indexOf(c))
+            if (values.indexOf(c) == -1) return false
+        }
+        return true
+    }
+    else if (logic == 'or'){
+        for (const c of conditions){
+            if (values.indexOf(c) > -1) return true
+        }
+        return false
+    }
+}
 
 class Data {
     constructor(root) {
@@ -16,18 +71,10 @@ class Data {
     init() {
         this.resetFilterState();
         this.resetImgState();
-        // this.updateSearchedImagesData();
         this.updateFilteredImagesData();
     }
 
-    // @observable.shallow searchData = {//database for search
-    //     titleList: titleList,
-    //     keywordsList: null,
-    //     abstractList: null,
-    //     caption: null,
-    // }
     @observable.shallow authorsList = authorsData;//database for filtering author
-    @observable.shallow imagesSizeData = imagesSizeData;//main database
 
 
 
@@ -41,6 +88,15 @@ class Data {
     @observable filteredImagesData = {};//a subdataset of imagesData after filtering
     // @observable filteredImagesData = imagesData;//a subdataset of imagesData after filtering
     @observable imgList = [];//list of images' filename
+
+    @observable zoomInState = {
+        activate: false,
+        levelName: null,
+        client: null,
+        host: null
+    }
+    @observable zoomInImgList = [];//list of images' filename
+
     @observable coOccurrenceData = {};
     // @observable searchWords = null;
     @observable.deep filterState = {}
@@ -87,22 +143,6 @@ class Data {
 
     @action resetImagesYearList = () => (
         this.imagesYearList = {
-            // 1990: 0,
-            // 1991: 0,
-            // 1992: 0,
-            // 1993: 0,
-            // 1994: 0,
-            // 1995: 0,
-            // 1996: 0,
-            // 1997: 0,
-            // 1998: 0,
-            // 1999: 0,
-            // 2000: 0,
-            // 2001: 0,
-            // 2002: 0,
-            // 2003: 0,
-            // 2004: 0,
-            // 2005: 0,
             2006: 0,
             2007: 0,
             2008: 0,
@@ -254,75 +294,40 @@ class Data {
         }
 
         if (client === null && host === null) {//not use heatmap View(common case)
-            this.imgList = Object.keys(this.filteredImagesData).map((key) => {
-                return `${key}.png`
-            })
+            this.imgList = Object.keys(this.filteredImagesData)
         } else if (client === null || host === null) {//use heatmap View's Typebar
             this.imgList = [];
-            Object.keys(imgList).forEach(key => {
-                this.imgList = this.imgList.concat(imgList[key].map(img => {
-                    return `${img}.png`
-                }))
+            Object.keys(imgList).forEach(imgId => {
+                this.imgList = this.imgList.concat(imgList[imgId])
             })
             this.imgList = Array.from(new Set(this.imgList))
-        } else {//use heatmap View's heatmap or detailsBar
-            this.imgList = imgList.map(img => {
-                return `${img}.png`
-            })
         }
-        this.imgList = Array.from(new Set(this.imgList));
+        this.zoomInImgList = Array.from(new Set(imgList));
+        this.zoomInState = {
+            activate: true,
+            levelName: this.dataState.overviewDetailState === false? this.dataState.overviewState: this.dataState.overviewDetailState,
+            client: client,
+            host: host
+        }
     }
 
     @action updateSearchWords = (value) => {
         this.filterState.searchWords = value;
     }
 
-    // @action updateSearchedImagesData = (value) => {
     @action updateFilteredImagesData = () => {
-        // //console.log(this.filterState);
-        // let filterState = ['searchState', 'visType', 'compType', 'conference', 'authors'].map(filterType => {
-        //     return Object.keys(this.filterState[filterType]).map(detailType => {
-        //         if (this.filterState[filterType][detailType]) return detailType;
-        //     }).filter(s => {
-        //         return s && s.trim();
-        //     }).join('&')
-        // }).join('s=')
-
-        // let filterValue = ['filterType'].map(key => {
-        //     return Object.keys(this.filterState[key]).map(type => {
-        //         return this.filterState[key][type]
-        //     }).join('&')
-        // }).join('v=') + `v=${this.filterState.searchWords}`
         this.searchRequest(this.filterState);
     }
 
     @action searchRequest = (state) => {
-        this.searchedImagesData = fetch(url(`/filter/`), {
-            method: 'POST',
-            body: JSON.stringify(state)
-        })
-            .then(res => res.json())
-            .then(data => {
-                this.coOccurrenceData = data['coOccurrence'];
-                delete data['coOccurrence'];
-                this.filteredImagesData = data;
-                //console.log(Object.keys(this.filteredImagesData))
-            }).then(() => {
-                // this.updateFilteredImagesData();
-                this.updateImagesYearList();
-                this.updateHeatmapData();
-                this.updateImgList();
-            })
+        this.imgList = filterImages(state)
+        this.updateImagesYearList();
+        this.updateHeatmapData();
     }
 
     @action getImgDetails = (img_id) => {
-        fetch(url(`/img_details/${img_id}`))
-            .then(res => res.json())
-            .then(data => {
-                this.loadData(data)
-            }).then(() => {
-                this.transformDataFromRaw()
-            })
+        this.loadData(compositeVisInfo[img_id]);
+        this.transformDataFromRaw();
     }
 
     @action loadData = (data) => {
@@ -340,13 +345,15 @@ class Data {
         this.transformRelationsFromRaw();
     }
 
+    getImageSize = (imgId) => {
+        return compositeVisInfo[imgId].img_size
+    }
+
     //update timeLine view's data
     @action updateImagesYearList = () => {
         this.resetImagesYearList();
-        Object.keys(this.filteredImagesData).forEach(key => {
-            this.imagesYearList[this.filteredImagesData[key]['year']] += 1;
-            if (this.filteredImagesData[key]['year'] < parseInt(this.filterState.years[0]) ||
-                this.filteredImagesData[key]['year'] > parseInt(this.filterState.years[1])) delete this.filteredImagesData[key]
+        this.imgList.forEach(key => {
+            this.imagesYearList[compositeVisInfo[key]['year']] += 1;
         })
         this.updateFilteredVisType();
     }
@@ -364,16 +371,16 @@ class Data {
             document.getElementById('heatmap_wrap').style.height = '90%';
         // //console.log(this.filteredImagesData)
         if (this.dataState.overviewState === 'coOccurrence') {
-            Object.keys(this.coOccurrenceData).forEach(key => {
-                this.coOccurrenceData[key].forEach(arr => {
+            this.imgList.forEach(imgId => {
+                compositeVisInfo[imgId].coOccurrence.forEach(arr => {
                     if(arr[0] in this.filteredVisType && arr[1] in this.filteredVisType){
-                        this.heatmapData[arr[0]][arr[1]].push(key)
+                        this.heatmapData[arr[0]][arr[1]].push(imgId)
                     }
                 })
             })
         } else {
-            Object.keys(this.filteredImagesData).forEach(key => {
-                this.filteredImagesData[key].comp.forEach(arr => {
+            this.imgList.forEach(imgId => {
+                compositeVisInfo[imgId].comp.forEach(arr => {
                     // //console.log(arr)
                     const intersectionLen = (arr1, arr2) => {
                         return arr1.filter(compType => arr2.indexOf(compType) > -1).length
@@ -394,7 +401,7 @@ class Data {
                         }
                     }
 
-                    this.heatmapData[arr[0]][arr[1]].push(key)
+                    this.heatmapData[arr[0]][arr[1]].push(imgId)
                 })
             })
         }
@@ -444,8 +451,8 @@ class Data {
     @action updateFilteredVisType = () => {
         this.resetFilteredVisType();
         if(this.dataState.overviewState === 'coOccurrence'){
-            Object.keys(this.coOccurrenceData).forEach(img =>{
-                this.coOccurrenceData[img].forEach(comp => {
+            this.imgList.forEach(imgId =>{
+                compositeVisInfo[imgId].comp.forEach(comp => {
                     const client = comp[0];
                     const host = comp[1];
                     [client, host].forEach(visType => {
@@ -458,10 +465,11 @@ class Data {
                     })
                 })
             })
-        }else{
-            Object.keys(this.filteredImagesData).forEach(img => {
+        }
+        else{
+            this.imgList.forEach(imgId => {
                 // //console.log(img)
-                this.filteredImagesData[img]['comp'].forEach(comp => {
+                compositeVisInfo[imgId].comp.forEach(comp => {
                     const client = comp[0];
                     const host = comp[1];
                     [client, host].forEach(visType => {
@@ -507,7 +515,6 @@ class Data {
         this.updateFilteredImagesData();
         this.updateImagesYearList();
         this.updateHeatmapData();
-        this.updateImgList();
     }
 
     //count true in filterState
@@ -532,7 +539,6 @@ class Data {
         this.updateFilteredImagesData();
         this.updateImagesYearList();
         this.updateHeatmapData();
-        this.updateImgList();
     }
 
     @action changeFocusVisType = () => {
@@ -544,7 +550,7 @@ class Data {
         const dimensions = this.imgState.viewDimension;
         const imgSize = this.imgState.imgSize;
         ['img_size'].forEach(key => {
-            this.imgState[key] = this.imagesSizeData[img][key]
+            this.imgState[key] = compositeVisInfo[img].img_size[key]
         })
         this.imgState.subfigures = this.imgState.subfiguresRaw.map((raw, i) => {
             const numId = parseInt(raw.id.replace(raw.type + "-", ""));
@@ -563,20 +569,6 @@ class Data {
                 type: raw.type,
             }
         });
-        // this.imgState.visualizations = this.imgState.visualizationsRaw.map((raw, i) => {
-        //     const numId = parseInt(raw.id.replace(raw.type + "-", ""));
-        //     return {
-        //         x: (raw.x) / imgSize.width * dimensions.width,
-        //         y: (raw.y) / imgSize.height * dimensions.height,
-        //         width: (raw.width) / imgSize.width * dimensions.width,
-        //         height: (raw.height) / imgSize.height * dimensions.height,
-        //         stroke: ColorStyles[raw.type],
-        //         strokeWidth: 5,
-        //         id: raw.id,
-        //         numId: numId,
-        //         type: raw.type,
-        //     }
-        // });
     }
 
     @action transformVisualizationsFromRaw = (rel, isBalanced, getRelationType) => {
@@ -656,7 +648,6 @@ class Data {
             this.imgState.visualizations = null;
         }
         this.imgState.imgId = imgId;
-        const img = imgId.split('.')[0];
     }
 
     //close VISImage View
@@ -690,7 +681,6 @@ class Data {
             this.updateFilteredImagesData();
             this.updateImagesYearList();
             this.updateHeatmapData();
-            this.updateImgList();
         }
     }
 
@@ -701,11 +691,11 @@ class Data {
             overlaid: '#ef8536',
             nested: '#519c3e'
         }
+        console.log(value)
         this.dataState.overviewState = value;
         this.dataState.matrixColor = mapColor[value];
         this.updateFilteredVisType();
         this.updateHeatmapData();
-        // this.updateImgList();
     }
 
     @action updateSearchAuthors = (value) => {
@@ -718,9 +708,8 @@ class Data {
 
     @action countPatterns = () => {
         let cnt = 0;
-        this.imgList.forEach(img_src => {
-            const img_id = img_src.split('.')[0]
-            this.filteredImagesData[img_id].comp.forEach(comp => {
+        this.imgList.forEach(imgId => {
+            this.filteredImagesData[imgId].comp.forEach(comp => {
                 if (comp[2].indexOf('coOccurrence') > -1) {
                     cnt += comp[2].length - 1;
                 } else {

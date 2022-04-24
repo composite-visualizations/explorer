@@ -32,7 +32,6 @@ const useStyles = makeStyles((theme) => (
 
     },
     heatmapWrap: {
-      // left: '30%',
       width: '30vw',
       height: '90%',
     },
@@ -40,8 +39,6 @@ const useStyles = makeStyles((theme) => (
       zIndex: 1,
       width: '100%',
       height: '100%',
-      // overflowX:'scroll',
-      // overflowY:'scroll',
     },
     bar: {
       width: '100%',
@@ -55,9 +52,6 @@ const useStyles = makeStyles((theme) => (
     },
     OverviewTab: {
     }
-    // popoverPaper: {
-    //   display: 'flex'
-    // }
   }));
 
 const theme = createMuiTheme({
@@ -212,24 +206,6 @@ function Heatmap({ d }) {
       top: '91%',
       bottom: '5%',
       right: '7%',
-      // backgroundColor:'#e0f2ff',
-      // dataBackground: {
-      //   lineStyle: {
-      //     color: '#77c7ff',
-      //   },
-      //   areaStyle: {
-      //     color: '#deeefa ',
-      //   }
-      // },
-      // selectedDataBackgroud: {
-      //   lineStyle: {
-      //     color: '#77c7ff',
-      //   },
-      //   areaStyle: {
-      //     color: '#c8e8ff ',
-      //   }
-      // },
-      // fillerColor: 'rgba(224, 242, 255, 0.5)',
     }, {
       show: true,
       realtime: true,
@@ -239,24 +215,6 @@ function Heatmap({ d }) {
       top: '30%',
       bottom: '10%',
       right: '2%',
-      // backgroundColor: '#e0f2ff',
-      // dataBackground: {
-      //   lineStyle: {
-      //     color: '#77c7ff',
-      //   },
-      //   areaStyle: {
-      //     color: '#deeefa ',
-      //   }
-      // },
-      // selectedDataBackgroud: {
-      //   lineStyle: {
-      //     color: '#77c7ff',
-      //   },
-      //   areaStyle: {
-      //     color: '#c8e8ff ',
-      //   }
-      // },
-      // fillerColor: 'rgba(224, 242, 255, 0.5)',
     }],
     series: [{
       name: 'composization',
@@ -352,10 +310,10 @@ function Heatmap({ d }) {
           right: 50,
           title: 'close',
           icon: 'path d="M0.355223 0.40915C0.843863 -0.115599 1.52415 -0.156779 2.1215 0.40915L6.50133 4.81775L10.8812 0.40915C11.4785 -0.156779 12.1599 -0.115599 12.6452 0.40915C13.1338 0.932724 13.1024 1.8175 12.6452 2.30931C12.1902 2.80112 7.38334 7.60622 7.38334 7.60622C7.26888 7.73077 7.13169 7.82982 6.97995 7.89748C6.82822 7.96513 6.66506 8 6.50021 8C6.33535 8 6.17219 7.96513 6.02046 7.89748C5.86873 7.82982 5.73153 7.73077 5.61707 7.60622C5.61707 7.60622 0.812482 2.80112 0.355223 2.30931C-0.103157 1.8175 -0.133417 0.932724 0.355223 0.40915Z',
-          onclick: () => {
-            document.getElementById('heatmap_wrap').style.height = '90%';//echarts is in canvas,So I simply resize the wrap
-            d.resetDetailsBar();
-          }
+          // onclick: () => {
+          //   document.getElementById('heatmap_wrap').style.height = '90%';//echarts is in canvas,So I simply resize the wrap
+          //   d.resetDetailsBar();
+          // }
         }
       }
     },
@@ -422,21 +380,7 @@ function Heatmap({ d }) {
     myChart.off('click');//if not off, echarts will rerender for many times
     myChart.on('click', (params) => {
       // //console.log(params)
-      if (params.seriesType === 'bar') {
-        d.detailsBar.visType = ReverseLabelToName[params.name];
-        d.detailsBar.show = true;
-        d.detailsBar.type = params.seriesIndex === 1 ? 'Child' : 'Parent';
-        d.updateDetailsBarData();
-        document.getElementById('heatmap_wrap').style.height = '50%';//echarts is in canvas,So I simply resize the wrap
-        myChart.resize();
-        d.detailsBar.type === 'Child' ? d.updateImgList(ReverseLabelToName[params.name], null) : d.updateImgList(null, ReverseLabelToName[params.name])//Client:Host
-
-        // d.highlightIndexList = params.seriesIndex === 1 ? Object.keys(d.filteredVisType).map((visType, index) => {
-        //   return index + params.dataIndex * Object.keys(d.filteredVisType).length;
-        // }) : Object.keys(d.filteredVisType).map((visType, index) => {
-        //   return index * Object.keys(d.filteredVisType).length + params.dataIndex;
-        // })
-      } else if (params.seriesType === 'heatmap') {
+      if (params.seriesType === 'heatmap') {
         const value = params.value;
         if (value[2] == 0) return;
         const client = d.indexToClient[value[0]];
@@ -469,27 +413,23 @@ function Heatmap({ d }) {
     })
   }, [option, d.detailsBar.show, d.detailsBar.select, d.highlightIndexList, d.dataState.matrixColor]);
 
-  React.useEffect(() => {
-    const echarts = require("echarts");
-    let detailsBar = echarts.init(document.getElementById('details_bar'));
-    detailsBar.setOption(barOption);
-    detailsBar.off('click');//if not off, echarts will rerender for many times
-    detailsBar.on('click', (params) => {
-      // //console.log(params)
-      if (d.detailsBar.type === 'Child') {
-        d.updateImgList(d.detailsBar.visType, ReverseLabelToName[params.name])
-      } else if (d.detailsBar.type === 'Parent') {
-        d.updateImgList(ReverseLabelToName[params.name], d.detailsBar.visType)
-      }
-      // const hidx = Object.keys(d.filteredVisType).indexOf(ReverseLabelToName[params.name])
-      // const cidx = Object.keys(d.filteredVisType).indexOf(d.detailsBar.visType)
-      // const len = Object.keys(d.filteredVisType).length
-      // d.highlightIndexList = d.detailsBar.type === 'Client' ? cidx * len + hidx : cidx + hidx * len;
-    })
-    window.addEventListener('resize', () => {//resize when window resize
-      detailsBar.resize()
-    })
-  }, [barOption, d.detailsBar.show]);
+  // React.useEffect(() => {
+  //   const echarts = require("echarts");
+  //   let detailsBar = echarts.init(document.getElementById('details_bar'));
+  //   detailsBar.setOption(barOption);
+  //   detailsBar.off('click');//if not off, echarts will rerender for many times
+  //   detailsBar.on('click', (params) => {
+  //     // //console.log(params)
+  //     if (d.detailsBar.type === 'Child') {
+  //       d.updateImgList(d.detailsBar.visType, ReverseLabelToName[params.name])
+  //     } else if (d.detailsBar.type === 'Parent') {
+  //       d.updateImgList(ReverseLabelToName[params.name], d.detailsBar.visType)
+  //     }
+  //   })
+  //   window.addEventListener('resize', () => {//resize when window resize
+  //     detailsBar.resize()
+  //   })
+  // }, [barOption, d.detailsBar.show]);
 
 
 
@@ -502,7 +442,7 @@ function Heatmap({ d }) {
         <div className={classes.heatmap} id='heat_map'></div>
       </div>
 
-      <div className={classes.bar} id='details_bar'></div>
+      {/* <div className={classes.bar} id='details_bar'></div> */}
     </div>
   );
 }

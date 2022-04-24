@@ -1,12 +1,16 @@
 import React, { useEffect, useCallback } from 'react';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { inject, observer } from "mobx-react";
-import { Typography, Slider, Divider } from '@material-ui/core';
+import { Typography, Chip, Divider } from '@material-ui/core';
+import { LabelToName} from "../store/Categories";
 import SelectedImage from "./SelectedImage";
-// import { Replay } from '@material-ui/icons'
 import VISImage from './VISImage'
 import Gallery from 'react-photo-gallery';
-const url = uri => `https://compvis.zjuidg.org${uri}`;  //local version
+
+const url = (imageName) => {
+  const deImageName = imageName.split("_")
+  return `https://github.com/composite-visualizations/data/blob/main/${deImageName[0]}/${deImageName[1]}.png?raw=true`
+}
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,75 +50,32 @@ const useStyles = makeStyles((theme) => ({
   },
   tile: {
     margin: '',
+  },
+  chip: {
+    margin: '10px'
   }
 }));
 
-// const PrettoSlider = withStyles({
-//   root: {
-//     color: '#1A73E8',
-//     height: 8,
-//   },
-//   thumb: {
-//     height: 12,
-//     width: 12,
-//     backgroundColor: '#fff',
-//     border: '2px solid currentColor',
-//     marginTop: -2,
-//     marginLeft: -6,
-//     '&:focus, &:hover, &$active': {
-//       boxShadow: 'inherit',
-//     },
-//   },
-//   active: {},
-//   valueLabel: {
-//     left: 'calc(-50% + 4px)',
-//   },
-//   track: {
-//     height: 8,
-//     borderRadius: 4,
-//   },
-//   rail: {
-//     height: 8,
-//     borderRadius: 4,
-//   },
-// })(Slider);
 
 function VISGallery({ d }) {
   const classes = useStyles();
   const scaleWidth = 500;
   const scaleHeight = 500;
 
-  // const changeSlider = (e, value) => {
-  //   d.imgState.galleryScale = value;
-  // }
+  let imgList = d.zoomInState.activate? d.zoomInImgList:d.imgList
 
-  // useEffect(() => {
-  //   //console.log(imgList[0])
-  //   imgList = imgList.map(img => {
-  //     img.src = img.src
-  //     img.width = img.width * d.imgState.galleryScale;
-  //     img.height = img.height * d.imgState.galleryScale;
-  //     return img;
-  //   });
-  //   //console.log(imgList[0])
-  // }, [d.imgState.galleryScale]);
-
-  let imgList = d.imgList.length === 0 ? [] : d.imgList.map((img,idx) => {
-    const key = img.split('.')[0];
-    // //console.log(key)
-    const Width = d.imagesSizeData[key]['img_size']['width'] / scaleWidth * d.imgState.galleryScale;
-    const Height = d.imagesSizeData[key]['img_size']['height'] / scaleHeight * d.imgState.galleryScale;
-    // if(idx === 0)//console.log(Width,Height)
-    return { src: url(`/img_src/${img}`), width: Width, height: Height, loading: 'lazy' };
+  imgList = imgList.length === 0 ? [] : imgList.map(imgId => {
+    const Width = d.getImageSize(imgId)['width'] / scaleWidth * d.imgState.galleryScale;
+    const Height = d.getImageSize(imgId)['height'] / scaleHeight * d.imgState.galleryScale;
+    return { src: url(imgId), width: Width, height: Height, imgId: imgId};
   })
+
   
   const imageRenderer = useCallback(
-    ({ index, left, top, key, photo }) => (
+    ({ index, left, top, photo }) => (
       <SelectedImage
-        selected={false}
-        key={key}
-        margin={"2px"}
         index={index}
+        margin={"2px"}
         photo={photo}
         left={left}
         top={top}
@@ -122,30 +83,29 @@ function VISGallery({ d }) {
     ),[]
   );
 
+  const handleDelete = () => {
+    d.zoomInState = {
+      activate: false,
+      levelName: null,
+      client: null,
+      host: null
+    }
+  };
+
 
   return (
     <div className={classes.root}>
       <div className={classes.galleryBar}>
         <Typography className={classes.gallery} variant='h5'>{'Gallery '}</Typography>
-        <Typography className={classes.text}>{`${d.imgList.length} figures found`}</Typography>
-        {/* <IconButton onClick={() => d.test()}><Replay /></IconButton> */}
-        {/* <PrettoSlider
-          className={classes.slider}
-          value={d.imgState.galleryScale}
-          min={0.5}
-          max={2}
-          step={0.01}
-          onChangeCommitted={changeSlider}></PrettoSlider> */}
+        <Typography className={classes.text}>{`${imgList.length} figures found`}</Typography>
+        {d.zoomInState.activate && <Chip
+          label={`${LabelToName[d.zoomInState.levelName]}: ${LabelToName[d.zoomInState.client]}/${LabelToName[d.zoomInState.host]}`}
+          onDelete={handleDelete}
+          className={classes.chip}
+        />}
       </div>
       <Divider id='gallery_divider'></Divider>
       <div className={classes.galleryWrap} id={"gallery_wrap"}>
-        {/* <GridList cellHeight={160} className={classes.gridList} cols={3} spacing={10}>
-          {d.imgList.length!==0 && d.imgList.slice(0,18).map((tile, i) => {
-            return (<GridListTile className={classes.tile}key={i} cols={1}>
-              <img src={url(`/img_src/${tile}`)} alt='' onClick={() => d.activeSelectedImgState(tile)} />d.activeSelectedImgState(obj.photo.src.split('/')[-1].split('.')[0])
-            </GridListTile>)
-          })}
-        </GridList> */}
         <Gallery className={classes.galleryTest} photos={imgList} margin={10} renderImage={imageRenderer}></Gallery>
       </div>
       {d.dataState.selectGalleryImg && <VISImage className={classes.visImage} key={d.imgState.imgId}></VISImage>}

@@ -380,7 +380,22 @@ function Heatmap({ d }) {
     myChart.off('click');//if not off, echarts will rerender for many times
     myChart.on('click', (params) => {
       // //console.log(params)
-      if (params.seriesType === 'heatmap') {
+      if (params.seriesType === 'bar') {
+        // d.detailsBar.visType = ReverseLabelToName[params.name];
+        // d.detailsBar.show = true;
+        d.detailsBar.type = params.seriesIndex === 1 ? 'Child' : 'Parent';
+        // d.updateDetailsBarData();
+        // document.getElementById('heatmap_wrap').style.height = '50%';//echarts is in canvas,So I simply resize the wrap
+        // myChart.resize();
+        d.detailsBar.type === 'Child' ? d.updateImgList(ReverseLabelToName[params.name], null) : d.updateImgList(null, ReverseLabelToName[params.name])//Client:Host
+
+        // d.highlightIndexList = params.seriesIndex === 1 ? Object.keys(d.filteredVisType).map((visType, index) => {
+        //   return index + params.dataIndex * Object.keys(d.filteredVisType).length;
+        // }) : Object.keys(d.filteredVisType).map((visType, index) => {
+        //   return index * Object.keys(d.filteredVisType).length + params.dataIndex;
+        // })
+      } 
+      else if (params.seriesType === 'heatmap') {
         const value = params.value;
         if (value[2] == 0) return;
         const client = d.indexToClient[value[0]];

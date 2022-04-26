@@ -1,26 +1,48 @@
 import { makeObservable, action, computed, observable } from "mobx";
 import authorsData from '../resource/authors.json';
-import compositeVisInfo from '../resource/composite_vis_info_full.json'
+import compositeVisInfoUnordered from '../resource/composite_vis_info_full.json'
 import { ColorStyles} from "./Categories";
 
 
 
-
+const compositeVisInfo = Object.keys(compositeVisInfoUnordered).sort().reduce(
+    (obj, key) => { 
+      obj[key] = compositeVisInfoUnordered[key]; 
+      return obj;
+    }, 
+    {}
+  );
 
 function filterImages(state){
     // keys: compType, authors, conference, filterBarState??, filterType, searchState, searchWords, visType, years
 
     let imgList = []
 
+    const years = state.years
     const compType = Object.keys(state.compType).filter(key => state.compType[key] === true);
     const authors = Object.keys(state.authors).filter(key => state.authors[key] === true);
     const conference = Object.keys(state.conference).filter(key => state.conference[key] === true);
     const visType = Object.keys(state.visType).filter(key => state.visType[key] === true);
     const filterType = state.filterType
+    const searchState = state.searchState
+
+    let searchWords = state.searchWords.toLowerCase()
+    searchWords = searchWords==''? []:searchWords.split(' ')
 
 
-    Object.entries(compositeVisInfo).forEach(([itemKey, itemValue], idx) => {
-        let fulfilled = true
+    Object.keys(compositeVisInfo).forEach(itemKey => {
+        const itemValue = compositeVisInfo[itemKey]
+        let fulfilled = itemValue.year >= years[0] && itemValue.year <= years[1]
+        
+        if (fulfilled && searchWords.length > 0){
+            let allWords = []
+            for(const [wordKey, wordValue] of Object.entries(searchState)){
+                if (wordValue == true){ // or
+                    allWords = [...allWords, ...itemValue[wordKey].toLowerCase().split(' ')]
+                }
+            }
+            fulfilled = checkInclude(allWords, searchWords, 'and')
+        }
 
         if (fulfilled && compType.length > 0){
             fulfilled = checkInclude(itemValue.compType, compType, filterType.compType)
@@ -113,10 +135,12 @@ class Data {
 
 
 
+
     @action resetImgState = () => {//data for VISImage view
         this.imgState = {
             imgId: null,
             caption: null,
+            abstract: null,
             visType: null,
             compType: null,
             title: null,
@@ -209,10 +233,10 @@ class Data {
                 word_cloud: false,
             },
             conference: {
-                InfoVis: true,
-                VAST: true,
-                SciVis: true,
-                Vis: true,
+                InfoVis: false,
+                VAST: false,
+                SciVis: false,
+                Vis: false,
             },
             authors: this.authorsList,
             years: [2006, 2020],
@@ -225,7 +249,7 @@ class Data {
                 searchState: 'Search All'
             },
             filterType: {
-                visType: 'and',
+                visType: 'or',
                 compType: 'and',
                 conference: 'or',
                 authors: 'or',
@@ -286,14 +310,12 @@ class Data {
             imgList = hostResult
         }
 
-        if (client === null && host === null) {//not use heatmap View(common case)
-            this.imgList = Object.keys(this.filteredImagesData)
-        } else if (client === null || host === null) {//use heatmap View's Typebar
-            this.imgList = [];
+        if (client === null || host === null) {//use heatmap View's Typebar
+            let newImgList = [];
             Object.keys(imgList).forEach(imgId => {
-                this.imgList = this.imgList.concat(imgList[imgId])
+                newImgList = newImgList.concat(imgList[imgId])
             })
-            this.imgList = Array.from(new Set(this.imgList))
+            imgList = Array.from(new Set(newImgList))
         }
         this.zoomInImgList = Array.from(new Set(imgList));
         this.zoomInState = {
@@ -328,6 +350,7 @@ class Data {
         this.imgState.compType = data['compType']
         this.imgState.authors = data['authors']
         this.imgState.caption = data['caption']
+        this.imgState.abstract = data['abstract']
         this.imgState.conference = data['conference']
         this.imgState.year = data['year']
         this.imgState.title = data['title']
@@ -646,13 +669,13 @@ class Data {
     @action changeFilterType = (type, value) => {
         if (value !== this.filterState.filterType[type]) {
             this.filterState.filterType[type] = value;
-            if (value === 'and' && Object.keys(this.filterState[type]).length === this.filterStateSelected(type)
-                || (value === 'or' && this.filterStateSelected(type) === 0)) {
-                Object.keys(this.filterState[type]).forEach(key => {
-                    // if(key === 'coOccurrence')return
-                    this.filterState[type][key] = !this.filterState[type][key];
-                })
-            }
+            // if (value === 'and' && Object.keys(this.filterState[type]).length === this.filterStateSelected(type)
+            //     || (value === 'or' && this.filterStateSelected(type) === 0)) {
+            //     Object.keys(this.filterState[type]).forEach(key => {
+            //         // if(key === 'coOccurrence')return
+            //         this.filterState[type][key] = !this.filterState[type][key];
+            //     })
+            // }
             this.updateFilteredImagesData();
             this.updateImagesYearList();
             this.updateHeatmapData();
@@ -678,6 +701,7 @@ class Data {
         }).filter(s => {
             return s && s.trim();
         })
+        console.log(this.searchedAuthorsList)
     }
 
     @action countPatterns = () => {

@@ -263,6 +263,10 @@ function VISImage({ d, top }) {
                     <Typography className={classes.text}>{`${d.imgState['title']}`}</Typography>
                 </div>
                 <div className={classes.textWrap}>
+                    <Typography className={classes.textType}>{`Abstract:`}</Typography>
+                    <Typography className={classes.text}>{`${d.imgState['abstract']}`}</Typography>
+                </div>
+                <div className={classes.textWrap}>
                     <Typography className={classes.textType}>{`Authors:`}</Typography>
                     <Typography className={classes.text}>{d.imgState.authors ? d.imgState.authors.join(', ') : d.imgState.authors}</Typography>
                 </div>

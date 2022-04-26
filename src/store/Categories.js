@@ -140,8 +140,8 @@ const LabelToName = {
     'InfoVis': 'InfoVis',
     'VAST': 'VAST',
     'Vis': 'Vis',
-    'SciVis': 'SciVis'
-
+    'SciVis': 'SciVis',
+    null: 'Any Types'
 }
 
 const ReverseTextTranslate = {};

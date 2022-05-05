@@ -115,7 +115,7 @@ function PatternBlock({ icon, name, definition, advantages, disadvantages, sugge
                 {advantages.length > 0 ? <ol>{advantages.map(value => (<li className={classes.li}>{value}</li>))}</ol> : null}
                 {disadvantages.length > 0 ? <b className={classes.spanStyle}>Disadvantages:</b> : null}
                 {disadvantages.length > 0 ? <ol>{disadvantages.map(value => (<li className={classes.li}>{value}</li>))}</ol> : null}
-                {suggestions.length > 0 ? <b className={classes.spanStyle}>Design Suggestions:</b> : null}
+                {suggestions.length > 0 ? <b className={classes.spanStyle}>Observations:</b> : null}
                 {suggestions.length > 0 ? <ol>{suggestions.map(value => (<li className={classes.li}>{value}</li>))}</ol> : null}
             </div>
         </div>
@@ -126,7 +126,7 @@ function DesignPattern() {
     const classes = useStyles();
     // //console.log(patternData['juxtaposed'].advantages);
     // //console.log(patternData['juxtaposed'].advantages.length);
-    const [key, setValue] = React.useState('juxtaposed');
+    const [key, setValue] = React.useState('juxtaposition');
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -169,7 +169,7 @@ function DesignPattern() {
                         fontSize: '16px',
                         margin: '16px 24px 20px 24px'
                     }}>
-                    {patternData[key].advantages.length > 0 ? <b className={classes.spanStyle}>Common Advantages:</b> : null}
+                    {patternData[key].advantages.length > 0 ? <b className={classes.spanStyle}>Common Observations:</b> : null}
                     {patternData[key].advantages.length > 0 ? <ol>{patternData[key].advantages.map(value => (<li className={classes.li}>{value}</li>))}</ol> : null}
                     {patternData[key].disadvantages.length > 0 ? <b className={classes.spanStyle}>Common Disadvantages:</b> : null}
                     {patternData[key].disadvantages.length > 0 ? <ol>{patternData[key].disadvantages.map(value => (<li className={classes.li}>{value}</li>))}</ol> : null}
